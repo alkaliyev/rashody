@@ -1,6 +1,7 @@
 "use strict";
 
 const STORAGE_KEY = "rashody.expenses.v1";
+const BUDGET_STORAGE_KEY = "rashody.budget.v1";
 const CATEGORY_NAMES = ["Еда", "Транспорт", "Дом", "Другое"];
 const CATEGORIES = new Set(CATEGORY_NAMES);
 
@@ -19,10 +20,32 @@ const categoryTotalOutputs = {
   Дом: document.querySelector("#category-total-home"),
   Другое: document.querySelector("#category-total-other"),
 };
+const budgetForm = document.querySelector("#budget-form");
+const budgetTotal = document.querySelector("#budget-total");
+const budgetFields = {
+  Еда: {
+    input: document.querySelector("#budget-food"),
+    error: document.querySelector("#budget-food-error"),
+  },
+  Транспорт: {
+    input: document.querySelector("#budget-transport"),
+    error: document.querySelector("#budget-transport-error"),
+  },
+  Дом: {
+    input: document.querySelector("#budget-home"),
+    error: document.querySelector("#budget-home-error"),
+  },
+  Другое: {
+    input: document.querySelector("#budget-other"),
+    error: document.querySelector("#budget-other-error"),
+  },
+};
 
 let expenses = loadExpenses();
+let budgetLimits = loadBudgetLimits();
 
 dateInput.value = getLocalDateValue(new Date());
+fillBudgetInputs();
 render();
 
 form.addEventListener("submit", (event) => {
@@ -65,6 +88,46 @@ amountInput.addEventListener("input", () => {
   }
 });
 
+budgetForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const nextLimits = {};
+  let firstInvalidInput = null;
+
+  CATEGORY_NAMES.forEach((category) => {
+    const field = budgetFields[category];
+    const limit = parseBudgetLimit(field.input.value);
+
+    if (limit === null) {
+      showFieldError(field.input, field.error, "Введите целую сумму от нуля");
+      firstInvalidInput ||= field.input;
+      return;
+    }
+
+    clearFieldError(field.input, field.error);
+    nextLimits[category] = limit;
+  });
+
+  if (firstInvalidInput) {
+    firstInvalidInput.focus();
+    return;
+  }
+
+  budgetLimits = nextLimits;
+  saveBudgetLimits();
+  fillBudgetInputs();
+  renderBudgetTotal();
+});
+
+CATEGORY_NAMES.forEach((category) => {
+  const field = budgetFields[category];
+  field.input.addEventListener("input", () => {
+    if (field.error.textContent) {
+      clearFieldError(field.input, field.error);
+    }
+  });
+});
+
 function parseAmount(value) {
   const normalized = value.replace(/\s/g, "");
 
@@ -74,6 +137,21 @@ function parseAmount(value) {
 
   const amount = Number(normalized);
   return Number.isSafeInteger(amount) && amount > 0 ? amount : null;
+}
+
+function parseBudgetLimit(value) {
+  const normalized = value.replace(/\s/g, "");
+
+  if (normalized === "") {
+    return 0;
+  }
+
+  if (!/^\d+$/.test(normalized)) {
+    return null;
+  }
+
+  const limit = Number(normalized);
+  return Number.isSafeInteger(limit) && limit >= 0 ? limit : null;
 }
 
 function formatMoney(amount) {
@@ -117,6 +195,27 @@ function loadExpenses() {
   }
 }
 
+function loadBudgetLimits() {
+  const emptyLimits = Object.fromEntries(CATEGORY_NAMES.map((category) => [category, 0]));
+
+  try {
+    const stored = JSON.parse(localStorage.getItem(BUDGET_STORAGE_KEY) || "{}");
+    if (!stored || typeof stored !== "object" || Array.isArray(stored)) {
+      return emptyLimits;
+    }
+
+    CATEGORY_NAMES.forEach((category) => {
+      if (Number.isSafeInteger(stored[category]) && stored[category] >= 0) {
+        emptyLimits[category] = stored[category];
+      }
+    });
+  } catch {
+    return emptyLimits;
+  }
+
+  return emptyLimits;
+}
+
 function isValidExpense(expense) {
   return Boolean(
     expense
@@ -131,6 +230,10 @@ function isValidExpense(expense) {
 
 function saveExpenses() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(expenses));
+}
+
+function saveBudgetLimits() {
+  localStorage.setItem(BUDGET_STORAGE_KEY, JSON.stringify(budgetLimits));
 }
 
 function render() {
@@ -150,6 +253,21 @@ function render() {
     categoryTotalOutputs[category].value = formattedTotal;
     categoryTotalOutputs[category].textContent = formattedTotal;
   });
+
+  renderBudgetTotal();
+}
+
+function fillBudgetInputs() {
+  CATEGORY_NAMES.forEach((category) => {
+    budgetFields[category].input.value = formatMoney(budgetLimits[category]).replace(" ₸", "");
+  });
+}
+
+function renderBudgetTotal() {
+  const total = CATEGORY_NAMES.reduce((sum, category) => sum + budgetLimits[category], 0);
+  const formattedTotal = formatMoney(total);
+  budgetTotal.value = formattedTotal;
+  budgetTotal.textContent = formattedTotal;
 }
 
 function createExpenseItem(expense) {
@@ -205,4 +323,14 @@ function showAmountError(message) {
 function clearAmountError() {
   amountError.textContent = "";
   amountInput.removeAttribute("aria-invalid");
+}
+
+function showFieldError(input, error, message) {
+  error.textContent = message;
+  input.setAttribute("aria-invalid", "true");
+}
+
+function clearFieldError(input, error) {
+  error.textContent = "";
+  input.removeAttribute("aria-invalid");
 }

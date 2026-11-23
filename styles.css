@@ -70,6 +70,39 @@ h2 {
   box-shadow: 0 14px 35px rgba(65, 53, 38, 0.07);
 }
 
+.budget {
+  margin-top: 20px;
+}
+
+.budget__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.budget__header h2 {
+  margin-bottom: 0;
+}
+
+.budget__total {
+  flex: none;
+  font-size: 1.35rem;
+  font-weight: 850;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+
+.budget__fields {
+  display: grid;
+  gap: 0 16px;
+}
+
+.budget__field {
+  min-width: 0;
+}
+
 .field {
   margin-bottom: 16px;
 }
@@ -241,6 +274,10 @@ button:active {
 
   .card {
     padding: 26px;
+  }
+
+  .budget__fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

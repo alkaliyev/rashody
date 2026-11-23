@@ -64,6 +64,74 @@
         </form>
       </section>
 
+      <section class="card budget" aria-labelledby="budget-title">
+        <div class="budget__header">
+          <div>
+            <p class="summary__label">На текущий месяц</p>
+            <h2 id="budget-title">Бюджет на месяц</h2>
+          </div>
+          <output class="budget__total" id="budget-total">0 ₸</output>
+        </div>
+
+        <form id="budget-form" novalidate>
+          <div class="budget__fields">
+            <div class="field budget__field">
+              <label for="budget-food">Еда, ₸</label>
+              <input
+                id="budget-food"
+                name="food"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                aria-describedby="budget-food-error"
+              >
+              <p class="field__error" id="budget-food-error" role="alert"></p>
+            </div>
+
+            <div class="field budget__field">
+              <label for="budget-transport">Транспорт, ₸</label>
+              <input
+                id="budget-transport"
+                name="transport"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                aria-describedby="budget-transport-error"
+              >
+              <p class="field__error" id="budget-transport-error" role="alert"></p>
+            </div>
+
+            <div class="field budget__field">
+              <label for="budget-home">Дом, ₸</label>
+              <input
+                id="budget-home"
+                name="home"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                aria-describedby="budget-home-error"
+              >
+              <p class="field__error" id="budget-home-error" role="alert"></p>
+            </div>
+
+            <div class="field budget__field">
+              <label for="budget-other">Другое, ₸</label>
+              <input
+                id="budget-other"
+                name="other"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                aria-describedby="budget-other-error"
+              >
+              <p class="field__error" id="budget-other-error" role="alert"></p>
+            </div>
+          </div>
+
+          <button type="submit">Сохранить</button>
+        </form>
+      </section>
+
       <section class="expenses" aria-labelledby="expenses-title">
         <div class="summary">
           <div>

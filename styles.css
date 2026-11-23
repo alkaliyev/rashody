@@ -76,6 +76,7 @@ h2 {
 
 .budget__header {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
@@ -173,6 +174,7 @@ button:active {
 
 .summary {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
@@ -233,6 +235,22 @@ button:active {
 
 .category-totals dd {
   margin: 0;
+}
+
+.category-totals__status {
+  margin: 1px -7px -5px;
+  padding: 6px 7px;
+  border-radius: 9px;
+}
+
+.category-totals__status--overrun {
+  background: #fbe7e3;
+}
+
+.category-totals__status--overrun dt,
+.category-totals__status--overrun output {
+  color: #a32b22;
+  font-weight: 800;
 }
 
 .category-totals output {
@@ -300,6 +318,10 @@ button:active {
   }
 
   .budget__fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .category-totals {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

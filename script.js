@@ -32,6 +32,12 @@ const categoryRemainingOutputs = {
   Дом: document.querySelector("#category-remaining-home"),
   Другое: document.querySelector("#category-remaining-other"),
 };
+const categoryStatusLabels = {
+  Еда: document.querySelector("#category-status-label-food"),
+  Транспорт: document.querySelector("#category-status-label-transport"),
+  Дом: document.querySelector("#category-status-label-home"),
+  Другое: document.querySelector("#category-status-label-other"),
+};
 const budgetForm = document.querySelector("#budget-form");
 const budgetTotal = document.querySelector("#budget-total");
 const budgetFields = {
@@ -263,8 +269,10 @@ function render() {
   CATEGORY_NAMES.forEach((category) => {
     const formattedTotal = formatMoney(totals.byCategory[category]);
     const formattedLimit = formatMoney(budgetLimits[category]);
-    const remaining = Math.max(budgetLimits[category] - totals.byCategory[category], 0);
-    const formattedRemaining = formatMoney(remaining);
+    const difference = budgetLimits[category] - totals.byCategory[category];
+    const isOverrun = difference < 0;
+    const formattedRemaining = formatMoney(Math.abs(difference));
+    const statusLabel = categoryStatusLabels[category];
 
     categoryTotalOutputs[category].value = formattedTotal;
     categoryTotalOutputs[category].textContent = formattedTotal;
@@ -272,6 +280,8 @@ function render() {
     categoryLimitOutputs[category].textContent = formattedLimit;
     categoryRemainingOutputs[category].value = formattedRemaining;
     categoryRemainingOutputs[category].textContent = formattedRemaining;
+    statusLabel.textContent = isOverrun ? "Перерасход:" : "Осталось";
+    statusLabel.parentElement.classList.toggle("category-totals__status--overrun", isOverrun);
   });
 
   renderBudgetTotal();

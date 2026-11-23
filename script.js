@@ -20,6 +20,18 @@ const categoryTotalOutputs = {
   Дом: document.querySelector("#category-total-home"),
   Другое: document.querySelector("#category-total-other"),
 };
+const categoryLimitOutputs = {
+  Еда: document.querySelector("#category-limit-food"),
+  Транспорт: document.querySelector("#category-limit-transport"),
+  Дом: document.querySelector("#category-limit-home"),
+  Другое: document.querySelector("#category-limit-other"),
+};
+const categoryRemainingOutputs = {
+  Еда: document.querySelector("#category-remaining-food"),
+  Транспорт: document.querySelector("#category-remaining-transport"),
+  Дом: document.querySelector("#category-remaining-home"),
+  Другое: document.querySelector("#category-remaining-other"),
+};
 const budgetForm = document.querySelector("#budget-form");
 const budgetTotal = document.querySelector("#budget-total");
 const budgetFields = {
@@ -116,7 +128,7 @@ budgetForm.addEventListener("submit", (event) => {
   budgetLimits = nextLimits;
   saveBudgetLimits();
   fillBudgetInputs();
-  renderBudgetTotal();
+  render();
 });
 
 CATEGORY_NAMES.forEach((category) => {
@@ -250,8 +262,16 @@ function render() {
 
   CATEGORY_NAMES.forEach((category) => {
     const formattedTotal = formatMoney(totals.byCategory[category]);
+    const formattedLimit = formatMoney(budgetLimits[category]);
+    const remaining = Math.max(budgetLimits[category] - totals.byCategory[category], 0);
+    const formattedRemaining = formatMoney(remaining);
+
     categoryTotalOutputs[category].value = formattedTotal;
     categoryTotalOutputs[category].textContent = formattedTotal;
+    categoryLimitOutputs[category].value = formattedLimit;
+    categoryLimitOutputs[category].textContent = formattedLimit;
+    categoryRemainingOutputs[category].value = formattedRemaining;
+    categoryRemainingOutputs[category].textContent = formattedRemaining;
   });
 
   renderBudgetTotal();

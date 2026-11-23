@@ -203,13 +203,36 @@ button:active {
 }
 
 .category-totals li {
+  min-height: 44px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.category-totals__name {
+  margin-bottom: 10px;
+  font-weight: 800;
+}
+
+.category-totals__details {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+}
+
+.category-totals__details div {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  min-height: 44px;
-  padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.78);
+}
+
+.category-totals dt {
+  color: #716b61;
+  font-size: 0.9rem;
+}
+
+.category-totals dd {
+  margin: 0;
 }
 
 .category-totals output {

@@ -1,7 +1,8 @@
 "use strict";
 
 const STORAGE_KEY = "rashody.expenses.v1";
-const CATEGORIES = new Set(["Еда", "Транспорт", "Дом", "Другое"]);
+const CATEGORY_NAMES = ["Еда", "Транспорт", "Дом", "Другое"];
+const CATEGORIES = new Set(CATEGORY_NAMES);
 
 const form = document.querySelector("#expense-form");
 const amountInput = document.querySelector("#amount");
@@ -12,6 +13,12 @@ const amountError = document.querySelector("#amount-error");
 const expenseList = document.querySelector("#expense-list");
 const emptyState = document.querySelector("#empty-state");
 const monthTotal = document.querySelector("#month-total");
+const categoryTotalOutputs = {
+  Еда: document.querySelector("#category-total-food"),
+  Транспорт: document.querySelector("#category-total-transport"),
+  Дом: document.querySelector("#category-total-home"),
+  Другое: document.querySelector("#category-total-other"),
+};
 
 let expenses = loadExpenses();
 
@@ -134,8 +141,15 @@ function render() {
   expenses.forEach((expense) => fragment.append(createExpenseItem(expense)));
   expenseList.append(fragment);
 
-  monthTotal.value = formatMoney(getCurrentMonthTotal());
+  const totals = getCurrentMonthTotals();
+  monthTotal.value = formatMoney(totals.total);
   monthTotal.textContent = monthTotal.value;
+
+  CATEGORY_NAMES.forEach((category) => {
+    const formattedTotal = formatMoney(totals.byCategory[category]);
+    categoryTotalOutputs[category].value = formattedTotal;
+    categoryTotalOutputs[category].textContent = formattedTotal;
+  });
 }
 
 function createExpenseItem(expense) {
@@ -166,13 +180,21 @@ function createExpenseItem(expense) {
   return item;
 }
 
-function getCurrentMonthTotal() {
+function getCurrentMonthTotals() {
   const now = new Date();
   const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-`;
+  const byCategory = Object.fromEntries(CATEGORY_NAMES.map((category) => [category, 0]));
 
-  return expenses.reduce((total, expense) => {
-    return expense.date.startsWith(currentMonth) ? total + expense.amount : total;
-  }, 0);
+  expenses.forEach((expense) => {
+    if (expense.date.startsWith(currentMonth)) {
+      byCategory[expense.category] += expense.amount;
+    }
+  });
+
+  return {
+    byCategory,
+    total: CATEGORY_NAMES.reduce((sum, category) => sum + byCategory[category], 0),
+  };
 }
 
 function showAmountError(message) {

@@ -157,6 +157,34 @@ button:active {
   letter-spacing: -0.03em;
 }
 
+.category-totals {
+  display: grid;
+  gap: 1px;
+  margin: 0 0 16px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #e2ddd2;
+  border-radius: 16px;
+  background: #e2ddd2;
+  list-style: none;
+}
+
+.category-totals li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 44px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.category-totals output {
+  flex: none;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
 .empty-state {
   padding: 28px 18px;
   border: 1px dashed #cfc8bc;

@@ -6,6 +6,9 @@ const CATEGORY_NAMES = ["Еда", "Транспорт", "Дом", "Другое"
 const CATEGORIES = new Set(CATEGORY_NAMES);
 
 const form = document.querySelector("#expense-form");
+const formTitle = document.querySelector("#form-title");
+const expenseSubmit = document.querySelector("#expense-submit");
+const cancelEditButton = document.querySelector("#cancel-edit");
 const amountInput = document.querySelector("#amount");
 const categoryInput = document.querySelector("#category");
 const dateInput = document.querySelector("#date");
@@ -61,6 +64,7 @@ const budgetFields = {
 
 let expenses = loadExpenses();
 let budgetLimits = loadBudgetLimits();
+let editingExpenseId = null;
 
 dateInput.value = getLocalDateValue(new Date());
 fillBudgetInputs();
@@ -84,25 +88,63 @@ form.addEventListener("submit", (event) => {
   clearAmountError();
 
   const expense = {
-    id: createId(),
+    id: editingExpenseId || createId(),
     amount,
     category: CATEGORIES.has(categoryInput.value) ? categoryInput.value : "Другое",
     date: dateInput.value,
     comment: commentInput.value.trim(),
   };
 
-  expenses.unshift(expense);
+  if (editingExpenseId) {
+    const expenseIndex = expenses.findIndex((item) => item.id === editingExpenseId);
+    if (expenseIndex === -1) {
+      leaveEditMode();
+      return;
+    }
+
+    expenses[expenseIndex] = expense;
+  } else {
+    expenses.unshift(expense);
+  }
+
   saveExpenses();
   render();
 
-  amountInput.value = "";
-  commentInput.value = "";
-  amountInput.focus();
+  if (editingExpenseId) {
+    leaveEditMode();
+  } else {
+    clearExpenseFields();
+  }
 });
 
 amountInput.addEventListener("input", () => {
   if (amountError.textContent) {
     clearAmountError();
+  }
+});
+
+cancelEditButton.addEventListener("click", () => {
+  leaveEditMode();
+});
+
+expenseList.addEventListener("click", (event) => {
+  const actionButton = event.target.closest("button[data-action]");
+  if (!actionButton || !expenseList.contains(actionButton)) {
+    return;
+  }
+
+  const expense = expenses.find((item) => item.id === actionButton.dataset.expenseId);
+  if (!expense) {
+    return;
+  }
+
+  if (actionButton.dataset.action === "edit") {
+    startEditing(expense);
+    return;
+  }
+
+  if (actionButton.dataset.action === "delete") {
+    deleteExpense(expense);
   }
 });
 
@@ -325,7 +367,74 @@ function createExpenseItem(expense) {
     item.append(comment);
   }
 
+  const actions = document.createElement("div");
+  actions.className = "expense-item__actions";
+  actions.append(
+    createExpenseActionButton("Изменить", "edit", expense),
+    createExpenseActionButton("Удалить", "delete", expense)
+  );
+  item.append(actions);
+
   return item;
+}
+
+function createExpenseActionButton(text, action, expense) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.textContent = text;
+  button.dataset.action = action;
+  button.dataset.expenseId = expense.id;
+  button.className = action === "delete" ? "button--danger" : "button--secondary";
+  button.setAttribute("aria-label", `${text} трату ${expense.category} ${formatMoney(expense.amount)}`);
+  return button;
+}
+
+function startEditing(expense) {
+  editingExpenseId = expense.id;
+  amountInput.value = formatMoney(expense.amount).replace(" ₸", "");
+  categoryInput.value = expense.category;
+  dateInput.value = expense.date;
+  commentInput.value = expense.comment;
+  formTitle.textContent = "Изменить трату";
+  expenseSubmit.textContent = "Сохранить";
+  cancelEditButton.hidden = false;
+  clearAmountError();
+  form.closest(".card").scrollIntoView({ block: "start" });
+  amountInput.focus();
+}
+
+function leaveEditMode() {
+  editingExpenseId = null;
+  formTitle.textContent = "Новая трата";
+  expenseSubmit.textContent = "Добавить";
+  cancelEditButton.hidden = true;
+  clearExpenseFields();
+}
+
+function clearExpenseFields() {
+  amountInput.value = "";
+  commentInput.value = "";
+  clearAmountError();
+  amountInput.focus();
+}
+
+function deleteExpense(expense) {
+  const shouldDelete = window.confirm(
+    `Удалить трату ${formatMoney(expense.amount)} в категории «${expense.category}»?`
+  );
+
+  if (!shouldDelete) {
+    return;
+  }
+
+  expenses = expenses.filter((item) => item.id !== expense.id);
+  saveExpenses();
+
+  if (editingExpenseId === expense.id) {
+    leaveEditMode();
+  }
+
+  render();
 }
 
 function getCurrentMonthTotals() {

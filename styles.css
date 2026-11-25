@@ -168,6 +168,23 @@ button:active {
   transform: translateY(1px);
 }
 
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.form-actions button {
+  flex: 1 1 140px;
+  width: auto;
+}
+
+.button--secondary {
+  border: 1px solid #cfc8bc;
+  color: #45413b;
+  background: #fff;
+}
+
 .expenses {
   margin-top: 28px;
 }
@@ -306,6 +323,26 @@ button:active {
   grid-column: 1 / -1;
   overflow-wrap: anywhere;
   color: #45413b;
+}
+
+.expense-item__actions {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 7px;
+}
+
+.expense-item__actions button {
+  min-height: 44px;
+  padding: 0 10px;
+  font-size: 0.9rem;
+}
+
+.button--danger {
+  border: 1px solid #d8a29b;
+  color: #a32b22;
+  background: #fff5f3;
 }
 
 @media (min-width: 520px) {

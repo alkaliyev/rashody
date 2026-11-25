@@ -17,6 +17,9 @@ const amountError = document.querySelector("#amount-error");
 const expenseList = document.querySelector("#expense-list");
 const emptyState = document.querySelector("#empty-state");
 const monthTotal = document.querySelector("#month-total");
+const monthBudgetStatus = document.querySelector("#month-budget-status");
+const monthBudgetLabel = document.querySelector("#month-budget-label");
+const monthBudgetBalance = document.querySelector("#month-budget-balance");
 const categoryTotalOutputs = {
   Еда: document.querySelector("#category-total-food"),
   Транспорт: document.querySelector("#category-total-transport"),
@@ -335,6 +338,7 @@ function render() {
   });
 
   renderBudgetTotal();
+  renderMonthBudgetBalance(totals.total);
 }
 
 function fillBudgetInputs() {
@@ -344,10 +348,24 @@ function fillBudgetInputs() {
 }
 
 function renderBudgetTotal() {
-  const total = CATEGORY_NAMES.reduce((sum, category) => sum + budgetLimits[category], 0);
-  const formattedTotal = formatMoney(total);
+  const formattedTotal = formatMoney(getBudgetTotal());
   budgetTotal.value = formattedTotal;
   budgetTotal.textContent = formattedTotal;
+}
+
+function renderMonthBudgetBalance(expensesTotal) {
+  const difference = getBudgetTotal() - expensesTotal;
+  const isOverrun = difference < 0;
+  const formattedBalance = formatMoney(Math.abs(difference));
+
+  monthBudgetLabel.textContent = isOverrun ? "Перерасход бюджета:" : "Остаток бюджета";
+  monthBudgetBalance.value = formattedBalance;
+  monthBudgetBalance.textContent = formattedBalance;
+  monthBudgetStatus.classList.toggle("month-balance--overrun", isOverrun);
+}
+
+function getBudgetTotal() {
+  return CATEGORY_NAMES.reduce((sum, category) => sum + budgetLimits[category], 0);
 }
 
 function createExpenseItem(expense) {

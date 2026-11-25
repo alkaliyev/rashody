@@ -361,6 +361,11 @@ button:active {
   .category-totals {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .budget__field:last-child:nth-child(odd),
+  .category-totals li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

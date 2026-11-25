@@ -39,6 +39,7 @@
               <option value="Еда">Еда</option>
               <option value="Транспорт">Транспорт</option>
               <option value="Дом">Дом</option>
+              <option value="Рассрочки">Рассрочки</option>
               <option value="Другое">Другое</option>
             </select>
           </div>
@@ -118,6 +119,19 @@
             </div>
 
             <div class="field budget__field">
+              <label for="budget-installments">Рассрочки, ₸</label>
+              <input
+                id="budget-installments"
+                name="installments"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                aria-describedby="budget-installments-error"
+              >
+              <p class="field__error" id="budget-installments-error" role="alert"></p>
+            </div>
+
+            <div class="field budget__field">
               <label for="budget-other">Другое, ₸</label>
               <input
                 id="budget-other"
@@ -193,6 +207,23 @@
               <div class="category-totals__status">
                 <dt id="category-status-label-home">Осталось</dt>
                 <dd><output id="category-remaining-home">0 ₸</output></dd>
+              </div>
+            </dl>
+          </li>
+          <li>
+            <p class="category-totals__name">Рассрочки</p>
+            <dl class="category-totals__details">
+              <div>
+                <dt>Лимит</dt>
+                <dd><output id="category-limit-installments">0 ₸</output></dd>
+              </div>
+              <div>
+                <dt>Потрачено</dt>
+                <dd><output id="category-total-installments">0 ₸</output></dd>
+              </div>
+              <div class="category-totals__status">
+                <dt id="category-status-label-installments">Осталось</dt>
+                <dd><output id="category-remaining-installments">0 ₸</output></dd>
               </div>
             </dl>
           </li>

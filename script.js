@@ -2,7 +2,7 @@
 
 const STORAGE_KEY = "rashody.expenses.v1";
 const BUDGET_STORAGE_KEY = "rashody.budget.v1";
-const CATEGORY_NAMES = ["Еда", "Транспорт", "Дом", "Другое"];
+const CATEGORY_NAMES = ["Еда", "Транспорт", "Дом", "Рассрочки", "Другое"];
 const CATEGORIES = new Set(CATEGORY_NAMES);
 
 const form = document.querySelector("#expense-form");
@@ -21,24 +21,28 @@ const categoryTotalOutputs = {
   Еда: document.querySelector("#category-total-food"),
   Транспорт: document.querySelector("#category-total-transport"),
   Дом: document.querySelector("#category-total-home"),
+  Рассрочки: document.querySelector("#category-total-installments"),
   Другое: document.querySelector("#category-total-other"),
 };
 const categoryLimitOutputs = {
   Еда: document.querySelector("#category-limit-food"),
   Транспорт: document.querySelector("#category-limit-transport"),
   Дом: document.querySelector("#category-limit-home"),
+  Рассрочки: document.querySelector("#category-limit-installments"),
   Другое: document.querySelector("#category-limit-other"),
 };
 const categoryRemainingOutputs = {
   Еда: document.querySelector("#category-remaining-food"),
   Транспорт: document.querySelector("#category-remaining-transport"),
   Дом: document.querySelector("#category-remaining-home"),
+  Рассрочки: document.querySelector("#category-remaining-installments"),
   Другое: document.querySelector("#category-remaining-other"),
 };
 const categoryStatusLabels = {
   Еда: document.querySelector("#category-status-label-food"),
   Транспорт: document.querySelector("#category-status-label-transport"),
   Дом: document.querySelector("#category-status-label-home"),
+  Рассрочки: document.querySelector("#category-status-label-installments"),
   Другое: document.querySelector("#category-status-label-other"),
 };
 const budgetForm = document.querySelector("#budget-form");
@@ -55,6 +59,10 @@ const budgetFields = {
   Дом: {
     input: document.querySelector("#budget-home"),
     error: document.querySelector("#budget-home-error"),
+  },
+  Рассрочки: {
+    input: document.querySelector("#budget-installments"),
+    error: document.querySelector("#budget-installments-error"),
   },
   Другое: {
     input: document.querySelector("#budget-other"),
